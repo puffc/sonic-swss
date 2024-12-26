@@ -30,6 +30,7 @@ jobs:
       project: build
       pipeline: puffc.sonic-buildimage
       artifact: sonic-buildimage.vs1
+      buildVersionToDownload: latest
       allowPartiallySucceededBuilds: true
       path: $(Build.ArtifactStagingDirectory)/target/debs/bookworm
       patterns: |
