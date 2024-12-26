@@ -29,8 +29,7 @@ jobs:
       source: specific
       project: build
       pipeline: puffc.sonic-buildimage
-      pipelineId: 90
-      artifact: target
+      artifact: sonic-buildimage.vs1
       allowPartiallySucceededBuilds: true
       path: $(Build.ArtifactStagingDirectory)/target/debs/bookworm
       patterns: |
