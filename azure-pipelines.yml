@@ -6,5 +6,33 @@ trigger:
 
 pool: mypool
 
-steps:
-  - bash: echo "Hello world"
+jobs:
+- job: Download_artifacts
+  container:
+    image: sonicdev-microsoft.azurecr.io:443/sonic-slave-bookworm:latest
+  steps:
+  - checkout: self
+    clean: true
+    submodules: true
+  - script: |
+      sudo apt-get update
+      sudo apt-get install -y \
+        libhiredis-dev \
+        libzmq3-dev \
+        swig4.0 \
+        libdbus-1-dev \
+        libteam-dev
+      sudo pip3 install lcov_cobertura
+    displayName: "Install dependencies"  
+  - task: DownloadPipelineArtifact@2
+    inputs:
+      source: specific
+      project: build
+      pipeline: puffc.sonic-buildimage
+      artifact: target
+      allowPartiallySucceededBuilds: true
+      path: $(Build.ArtifactStagingDirectory)/debs/bookworm
+      patterns: |
+        libswsscommon_1.0.0_amd64.deb
+        libswsscommon-dev_1.0.0_amd64.deb
+    displayName: "Download sonic swss common deb packages"
