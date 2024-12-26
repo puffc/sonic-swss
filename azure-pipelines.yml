@@ -29,9 +29,10 @@ jobs:
       source: specific
       project: build
       pipeline: puffc.sonic-buildimage
+      pipelineId: 90
       artifact: target
       allowPartiallySucceededBuilds: true
-      path: $(Build.ArtifactStagingDirectory)/debs/bookworm
+      path: $(Build.ArtifactStagingDirectory)/target/debs/bookworm
       patterns: |
         libswsscommon_1.0.0_amd64.deb
         libswsscommon-dev_1.0.0_amd64.deb
