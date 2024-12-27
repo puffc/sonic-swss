@@ -11,7 +11,7 @@ stages:
   jobs:
   - job:
     container:
-      image: sonicdev-microsoft.azurecr.io:443/sonic-slave-bookworm:latest
+      image: sonicdev-microsoft.azurecr.io:443/sonic-slave-bullseye:latest
     steps:
     - checkout: self
       clean: true
@@ -96,9 +96,9 @@ stages:
     - script: |
         set -ex
         cd download
-        sudo dpkg -i $(find common/target/debs/bookworm -type f -name '*.deb')
-        sudo dpkg -i $(find swsscommon/target/debs/bookworm -type f -name '*.deb')
-        sudo dpkg -i $(find sairedis/target/debs/bookworm -type f -name '*.deb')
+        sudo dpkg -i $(find common/target/debs/bullseye -type f -name '*.deb')
+        sudo dpkg -i $(find swsscommon/target/debs/bullseye -type f -name '*.deb')
+        sudo dpkg -i $(find sairedis/target/debs/bullseye -type f -name '*.deb')
         cd ..
         rm -rf download
       workingDirectory: $(Build.ArtifactStagingDirectory)
@@ -113,7 +113,7 @@ stages:
         dpkg-buildpackage -us -uc -b -j$(nproc) && cp ../*.deb .
       displayName: "Compile sonic swss"
     - publish: $(System.DefaultWorkingDirectory)/
-      artifact: sonic-swss-bookworm
+      artifact: sonic-swss-bullseye
       displayName: "Archive swss debian packages"
     - publish: $(Build.ArtifactStagingDirectory)/
       artifact: sonic-swss-pytests
@@ -194,9 +194,9 @@ stages:
       displayName: "Download dash api"    
     - task: DownloadPipelineArtifact@2
       inputs:
-        artifact: sonic-swss-bookworm
+        artifact: sonic-swss-bullseye
         path: $(Build.ArtifactStagingDirectory)/download
-      displayName: "Download pre-stage built sonic-swss-bookworm"
+      displayName: "Download pre-stage built sonic-swss-bullseye"
     - task: DownloadPipelineArtifact@2
       inputs:
         source: specific
@@ -218,8 +218,8 @@ stages:
         mkdir -p .azure-pipelines/docker-sonic-vs/debs
 
         find $(Build.ArtifactStagingDirectory)/download/sairedis -name '*.deb' -exec cp "{}" .azure-pipelines/docker-sonic-vs/debs \;
-        cp -v $(Build.ArtifactStagingDirectory)/download/common/target/debs/bookworm/*.deb .azure-pipelines/docker-sonic-vs/debs
-        cp -v $(Build.ArtifactStagingDirectory)/download/swsscommon/target/debs/bookworm/*.deb .azure-pipelines/docker-sonic-vs/debs
+        cp -v $(Build.ArtifactStagingDirectory)/download/common/target/debs/bullseye/*.deb .azure-pipelines/docker-sonic-vs/debs
+        cp -v $(Build.ArtifactStagingDirectory)/download/swsscommon/target/debs/bullseye/*.deb .azure-pipelines/docker-sonic-vs/debs
 
         if [ -f $(Build.ArtifactStagingDirectory)/download/coverage.info ]; then
           cp -v $(Build.ArtifactStagingDirectory)/download/coverage.info $(Build.ArtifactStagingDirectory)/
