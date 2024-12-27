@@ -23,8 +23,6 @@ stages:
           libzmq3-dev \
           swig4.0 \
           libdbus-1-dev \
-          libprotobuf-dev \
-          libprotobuf-lite23 \
           libteam-dev
         sudo pip3 install lcov_cobertura
       displayName: "Install dependencies"  
@@ -32,8 +30,8 @@ stages:
       inputs:
         source: specific
         project: build
-        pipeline: puffc.sonic-buildimage
-        artifact: sonic-buildimage.vs1
+        pipeline: puffc.sonic-swss-common
+        artifact: sonic-swss-common-bullseye
         buildVersionToDownload: latest
         allowFailedBuilds: true
         allowPartiallySucceededBuilds: true
@@ -46,8 +44,8 @@ stages:
       inputs:
         source: specific
         project: build
-        pipeline: puffc.sonic-buildimage
-        artifact: sonic-buildimage.vs1
+        pipeline: puffc.sonic-sairedis
+        artifact: sonic-sairedis-bullseye
         buildVersionToDownload: latest
         allowFailedBuilds: true
         allowPartiallySucceededBuilds: true
