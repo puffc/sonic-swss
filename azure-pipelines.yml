@@ -78,6 +78,10 @@ stages:
           **/libnl-nf-3-200_*.deb
           **/libnl-nf-3-dev_*.deb
           **/libyang_*.deb
+          **/libprotobuf*.deb
+          **/libprotoc*.deb
+          **/protobuf-compiler*.deb
+
       displayName: "Download common libs"
     - task: DownloadPipelineArtifact@2
       inputs:
