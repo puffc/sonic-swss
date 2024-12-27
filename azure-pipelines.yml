@@ -6,225 +6,231 @@ trigger:
 
 pool: mypool
 
-
-jobs:
-- job:
-  container:
-    image: sonicdev-microsoft.azurecr.io:443/sonic-slave-bookworm:latest
-  steps:
-  - checkout: self
-    clean: true
-    submodules: true
-  - script: |
-      sudo apt-get update
-      sudo apt-get install -y \
-        libhiredis-dev \
-        libzmq3-dev \
-        swig4.0 \
-        libdbus-1-dev \
-        libteam-dev
-      sudo pip3 install lcov_cobertura
-    displayName: "Install dependencies"  
-  - task: DownloadPipelineArtifact@2
-    inputs:
-      source: specific
-      project: build
-      pipeline: puffc.sonic-buildimage
-      artifact: sonic-buildimage.vs1
-      buildVersionToDownload: latest
-      allowFailedBuilds: true
-      allowPartiallySucceededBuilds: true
-      path: $(Build.ArtifactStagingDirectory)/download/swsscommon
-      itemPattern: |
-        **/libswsscommon_1.0.0_*.deb
-        **/libswsscommon-dev_1.0.0_*.deb
-    displayName: "Download sonic swss common deb packages"
-  - task: DownloadPipelineArtifact@2
-    inputs:
-      source: specific
-      project: build
-      pipeline: puffc.sonic-buildimage
-      artifact: sonic-buildimage.vs1
-      buildVersionToDownload: latest
-      allowFailedBuilds: true
-      allowPartiallySucceededBuilds: true
-      path: $(Build.ArtifactStagingDirectory)/download/sairedis
-      itemPattern: |
-        **/libsaivs_*.deb
-        **/libsaivs-dev_*.deb
-        **/libsairedis_*.deb
-        **/libsairedis-dev_*.deb
-        **/libsaimetadata_*.deb
-        **/libsaimetadata-dev_*.deb
-        **/syncd-vs_*.deb
-    displayName: "Download sonic sairedis deb packages"
-  - task: DownloadPipelineArtifact@2
-    inputs:
-      source: specific
-      project: build
-      pipeline: puffc.sonic-buildimage
-      artifact: sonic-buildimage.vs1
-      buildVersionToDownload: latest
-      allowFailedBuilds: true
-      allowPartiallySucceededBuilds: true
-      path: $(Build.ArtifactStagingDirectory)/download/common
-      itemPattern: |
-        **/libnl-3-200_*.deb
-        **/libnl-3-dev_*.deb
-        **/libnl-genl-3-200_*.deb
-        **/libnl-genl-3-dev_*.deb
-        **/libnl-route-3-200_*.deb
-        **/libnl-route-3-dev_*.deb
-        **/libnl-nf-3-200_*.deb
-        **/libnl-nf-3-dev_*.deb
-        **/libyang_*.deb
-    displayName: "Download common libs"
-  - task: DownloadPipelineArtifact@2
-    inputs:
-      source: specific
-      project: build
-      pipeline: puffc.sonic-buildimage
-      artifact: sonic-buildimage.vs1
-      buildVersionToDownload: latest
-      allowFailedBuilds: true
-      allowPartiallySucceededBuilds: true
-      path: $(Build.ArtifactStagingDirectory)/download/common
-      patterns: |
-        **/libdashapi*.deb
-    displayName: "Download dash api"    
-  - script: |
-      set -ex
-      cd download
-      sudo dpkg -i $(find common/target/debs/bookworm -type f -name '*.deb')
-      sudo dpkg -i $(find swsscommon/target/debs/bookworm -type f -name '*.deb')
-      sudo dpkg -i $(find sairedis/target/debs/bookworm -type f -name '*.deb')
-      cd ..
-      rm -rf download
-    workingDirectory: $(Build.ArtifactStagingDirectory)
-    displayName: "Install libnl3, sonic swss common and sairedis"
-  - script: |
-      set -ex
-      tar czf pytest.tgz tests
-      cp -r pytest.tgz $(Build.ArtifactStagingDirectory)/
-      ./autogen.sh
-      dpkg-buildpackage -us -uc -b -j$(nproc) && cp ../*.deb .
-    displayName: "Compile sonic swss"
-  - publish: $(System.DefaultWorkingDirectory)/
-    artifact: sonic-swss-bookworm
-    displayName: "Archive swss debian packages"
-  - publish: $(Build.ArtifactStagingDirectory)/
-    artifact: sonic-swss-pytests
-    displayName: "Archive swss pytests"
-- job:
-  steps:
-  - task: DownloadPipelineArtifact@2
-    inputs:
-      source: specific
-      project: build
-      pipeline: puffc.sonic-buildimage
-      artifact: sonic-buildimage.vs1
-      buildVersionToDownload: latest
-      allowFailedBuilds: true
-      allowPartiallySucceededBuilds: true
-      path: $(Build.ArtifactStagingDirectory)/download/swsscommon
-      itemPattern: |
-        **/libswsscommon_1.0.0_*.deb
-        **/libswsscommon-dev_1.0.0_*.deb
-    displayName: "Download sonic swss common deb packages"
-  - task: DownloadPipelineArtifact@2
-    inputs:
-      source: specific
-      project: build
-      pipeline: puffc.sonic-buildimage
-      artifact: sonic-buildimage.vs1
-      buildVersionToDownload: latest
-      allowFailedBuilds: true
-      allowPartiallySucceededBuilds: true
-      path: $(Build.ArtifactStagingDirectory)/download/sairedis
-      itemPattern: |
-        **/libsaivs_*.deb
-        **/libsaivs-dev_*.deb
-        **/libsairedis_*.deb
-        **/libsairedis-dev_*.deb
-        **/libsaimetadata_*.deb
-        **/libsaimetadata-dev_*.deb
-        **/syncd-vs_*.deb
-    displayName: "Download sonic sairedis deb packages"
-  - task: DownloadPipelineArtifact@2
-    inputs:
-      source: specific
-      project: build
-      pipeline: puffc.sonic-buildimage
-      artifact: sonic-buildimage.vs1
-      buildVersionToDownload: latest
-      allowFailedBuilds: true
-      allowPartiallySucceededBuilds: true
-      path: $(Build.ArtifactStagingDirectory)/download/common
-      itemPattern: |
-        **/libnl-3-200_*.deb
-        **/libnl-3-dev_*.deb
-        **/libnl-genl-3-200_*.deb
-        **/libnl-genl-3-dev_*.deb
-        **/libnl-route-3-200_*.deb
-        **/libnl-route-3-dev_*.deb
-        **/libnl-nf-3-200_*.deb
-        **/libnl-nf-3-dev_*.deb
-        **/libyang_*.deb
-    displayName: "Download common libs"
-  - task: DownloadPipelineArtifact@2
-    inputs:
-      source: specific
-      project: build
-      pipeline: puffc.sonic-buildimage
-      artifact: sonic-buildimage.vs1
-      buildVersionToDownload: latest
-      allowFailedBuilds: true
-      allowPartiallySucceededBuilds: true
-      path: $(Build.ArtifactStagingDirectory)/download/common
-      patterns: |
-        **/libdashapi*.deb
-    displayName: "Download dash api"    
-  - task: DownloadPipelineArtifact@2
-    inputs:
+stages:
+- stage: Build
+  jobs:
+  - job:
+    container:
+      image: sonicdev-microsoft.azurecr.io:443/sonic-slave-bookworm:latest
+    steps:
+    - checkout: self
+      clean: true
+      submodules: true
+    - script: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          libhiredis-dev \
+          libzmq3-dev \
+          swig4.0 \
+          libdbus-1-dev \
+          libteam-dev
+        sudo pip3 install lcov_cobertura
+      displayName: "Install dependencies"  
+    - task: DownloadPipelineArtifact@2
+      inputs:
+        source: specific
+        project: build
+        pipeline: puffc.sonic-buildimage
+        artifact: sonic-buildimage.vs1
+        buildVersionToDownload: latest
+        allowFailedBuilds: true
+        allowPartiallySucceededBuilds: true
+        path: $(Build.ArtifactStagingDirectory)/download/swsscommon
+        itemPattern: |
+          **/libswsscommon_1.0.0_*.deb
+          **/libswsscommon-dev_1.0.0_*.deb
+      displayName: "Download sonic swss common deb packages"
+    - task: DownloadPipelineArtifact@2
+      inputs:
+        source: specific
+        project: build
+        pipeline: puffc.sonic-buildimage
+        artifact: sonic-buildimage.vs1
+        buildVersionToDownload: latest
+        allowFailedBuilds: true
+        allowPartiallySucceededBuilds: true
+        path: $(Build.ArtifactStagingDirectory)/download/sairedis
+        itemPattern: |
+          **/libsaivs_*.deb
+          **/libsaivs-dev_*.deb
+          **/libsairedis_*.deb
+          **/libsairedis-dev_*.deb
+          **/libsaimetadata_*.deb
+          **/libsaimetadata-dev_*.deb
+          **/syncd-vs_*.deb
+      displayName: "Download sonic sairedis deb packages"
+    - task: DownloadPipelineArtifact@2
+      inputs:
+        source: specific
+        project: build
+        pipeline: puffc.sonic-buildimage
+        artifact: sonic-buildimage.vs1
+        buildVersionToDownload: latest
+        allowFailedBuilds: true
+        allowPartiallySucceededBuilds: true
+        path: $(Build.ArtifactStagingDirectory)/download/common
+        itemPattern: |
+          **/libnl-3-200_*.deb
+          **/libnl-3-dev_*.deb
+          **/libnl-genl-3-200_*.deb
+          **/libnl-genl-3-dev_*.deb
+          **/libnl-route-3-200_*.deb
+          **/libnl-route-3-dev_*.deb
+          **/libnl-nf-3-200_*.deb
+          **/libnl-nf-3-dev_*.deb
+          **/libyang_*.deb
+      displayName: "Download common libs"
+    - task: DownloadPipelineArtifact@2
+      inputs:
+        source: specific
+        project: build
+        pipeline: puffc.sonic-buildimage
+        artifact: sonic-buildimage.vs1
+        buildVersionToDownload: latest
+        allowFailedBuilds: true
+        allowPartiallySucceededBuilds: true
+        path: $(Build.ArtifactStagingDirectory)/download/common
+        patterns: |
+          **/libdashapi*.deb
+      displayName: "Download dash api"    
+    - script: |
+        set -ex
+        cd download
+        sudo dpkg -i $(find common/target/debs/bookworm -type f -name '*.deb')
+        sudo dpkg -i $(find swsscommon/target/debs/bookworm -type f -name '*.deb')
+        sudo dpkg -i $(find sairedis/target/debs/bookworm -type f -name '*.deb')
+        cd ..
+        rm -rf download
+      workingDirectory: $(Build.ArtifactStagingDirectory)
+      displayName: "Install libnl3, sonic swss common and sairedis"
+    - script: |
+        set -ex
+        tar czf pytest.tgz tests
+        cp -r pytest.tgz $(Build.ArtifactStagingDirectory)/
+        ./autogen.sh
+        dpkg-buildpackage -us -uc -b -j$(nproc) && cp ../*.deb .
+      displayName: "Compile sonic swss"
+    - publish: $(System.DefaultWorkingDirectory)/
       artifact: sonic-swss-bookworm
-      path: $(Build.ArtifactStagingDirectory)/download
-    displayName: "Download pre-stage built sonic-swss-bookworm"
-  - task: DownloadPipelineArtifact@2
-    inputs:
-      source: specific
-      project: build
-      pipeline: puffc.sonic-buildimage
-      artifact: sonic-buildimage.vs1
-      buildVersionToDownload: latest
-      allowFailedBuilds: true
-      allowPartiallySucceededBuilds: true
-      path: $(Build.ArtifactStagingDirectory)/download
-      patterns: '**/target/docker-sonic-vs.gz'
-    displayName: "Download sonic-buildimage docker-sonic-vs"  
-  - script: |
-      set -ex
-      echo $(Build.DefinitionName).$(Build.BuildNumber)
+      displayName: "Archive swss debian packages"
+    - publish: $(Build.ArtifactStagingDirectory)/
+      artifact: sonic-swss-pytests
+      displayName: "Archive swss pytests"
 
-      docker load < $(Build.ArtifactStagingDirectory)/download/target/docker-sonic-vs.gz
+- stage: BuildDocker
+  dependsOn: Build
+  condition: succeeded('Build')
+  jobs:
+  - job:
+    steps:
+    - task: DownloadPipelineArtifact@2
+      inputs:
+        source: specific
+        project: build
+        pipeline: puffc.sonic-buildimage
+        artifact: sonic-buildimage.vs1
+        buildVersionToDownload: latest
+        allowFailedBuilds: true
+        allowPartiallySucceededBuilds: true
+        path: $(Build.ArtifactStagingDirectory)/download/swsscommon
+        itemPattern: |
+          **/libswsscommon_1.0.0_*.deb
+          **/libswsscommon-dev_1.0.0_*.deb
+      displayName: "Download sonic swss common deb packages"
+    - task: DownloadPipelineArtifact@2
+      inputs:
+        source: specific
+        project: build
+        pipeline: puffc.sonic-buildimage
+        artifact: sonic-buildimage.vs1
+        buildVersionToDownload: latest
+        allowFailedBuilds: true
+        allowPartiallySucceededBuilds: true
+        path: $(Build.ArtifactStagingDirectory)/download/sairedis
+        itemPattern: |
+          **/libsaivs_*.deb
+          **/libsaivs-dev_*.deb
+          **/libsairedis_*.deb
+          **/libsairedis-dev_*.deb
+          **/libsaimetadata_*.deb
+          **/libsaimetadata-dev_*.deb
+          **/syncd-vs_*.deb
+      displayName: "Download sonic sairedis deb packages"
+    - task: DownloadPipelineArtifact@2
+      inputs:
+        source: specific
+        project: build
+        pipeline: puffc.sonic-buildimage
+        artifact: sonic-buildimage.vs1
+        buildVersionToDownload: latest
+        allowFailedBuilds: true
+        allowPartiallySucceededBuilds: true
+        path: $(Build.ArtifactStagingDirectory)/download/common
+        itemPattern: |
+          **/libnl-3-200_*.deb
+          **/libnl-3-dev_*.deb
+          **/libnl-genl-3-200_*.deb
+          **/libnl-genl-3-dev_*.deb
+          **/libnl-route-3-200_*.deb
+          **/libnl-route-3-dev_*.deb
+          **/libnl-nf-3-200_*.deb
+          **/libnl-nf-3-dev_*.deb
+          **/libyang_*.deb
+      displayName: "Download common libs"
+    - task: DownloadPipelineArtifact@2
+      inputs:
+        source: specific
+        project: build
+        pipeline: puffc.sonic-buildimage
+        artifact: sonic-buildimage.vs1
+        buildVersionToDownload: latest
+        allowFailedBuilds: true
+        allowPartiallySucceededBuilds: true
+        path: $(Build.ArtifactStagingDirectory)/download/common
+        patterns: |
+          **/libdashapi*.deb
+      displayName: "Download dash api"    
+    - task: DownloadPipelineArtifact@2
+      inputs:
+        artifact: sonic-swss-bookworm
+        path: $(Build.ArtifactStagingDirectory)/download
+      displayName: "Download pre-stage built sonic-swss-bookworm"
+    - task: DownloadPipelineArtifact@2
+      inputs:
+        source: specific
+        project: build
+        pipeline: puffc.sonic-buildimage
+        artifact: sonic-buildimage.vs1
+        buildVersionToDownload: latest
+        allowFailedBuilds: true
+        allowPartiallySucceededBuilds: true
+        path: $(Build.ArtifactStagingDirectory)/download
+        patterns: '**/target/docker-sonic-vs.gz'
+      displayName: "Download sonic-buildimage docker-sonic-vs"  
+    - script: |
+        set -ex
+        echo $(Build.DefinitionName).$(Build.BuildNumber)
 
-      mkdir -p .azure-pipelines/docker-sonic-vs/debs
+        docker load < $(Build.ArtifactStagingDirectory)/download/target/docker-sonic-vs.gz
 
-      find $(Build.ArtifactStagingDirectory)/download/sairedis -name '*.deb' -exec cp "{}" .azure-pipelines/docker-sonic-vs/debs \;
-      cp -v $(Build.ArtifactStagingDirectory)/download/*.deb .azure-pipelines/docker-sonic-vs/debs
-      if [ -f $(Build.ArtifactStagingDirectory)/download/coverage.info ]; then
-        cp -v $(Build.ArtifactStagingDirectory)/download/coverage.info $(Build.ArtifactStagingDirectory)/
-        cp -v $(Build.ArtifactStagingDirectory)/download/coverage.xml $(Build.ArtifactStagingDirectory)/
-      fi
+        mkdir -p .azure-pipelines/docker-sonic-vs/debs
 
-      pushd .azure-pipelines
+        find $(Build.ArtifactStagingDirectory)/download/sairedis -name '*.deb' -exec cp "{}" .azure-pipelines/docker-sonic-vs/debs \;
+        cp -v $(Build.ArtifactStagingDirectory)/download/*.deb .azure-pipelines/docker-sonic-vs/debs
+        if [ -f $(Build.ArtifactStagingDirectory)/download/coverage.info ]; then
+          cp -v $(Build.ArtifactStagingDirectory)/download/coverage.info $(Build.ArtifactStagingDirectory)/
+          cp -v $(Build.ArtifactStagingDirectory)/download/coverage.xml $(Build.ArtifactStagingDirectory)/
+        fi
 
-      build_dir=$(grep BUILD_DIR $(Build.ArtifactStagingDirectory)/download/build.info | cut -d= -f2)
-      build_args="--build-arg build_dir=$build_dir"
+        pushd .azure-pipelines
 
-      docker build $build_args --no-cache -t docker-sonic-vs:$(Build.DefinitionName).$(Build.BuildNumber) docker-sonic-vs
+        build_dir=$(grep BUILD_DIR $(Build.ArtifactStagingDirectory)/download/build.info | cut -d= -f2)
+        build_args="--build-arg build_dir=$build_dir"
 
-      popd
+        docker build $build_args --no-cache -t docker-sonic-vs:$(Build.DefinitionName).$(Build.BuildNumber) docker-sonic-vs
 
-      docker save docker-sonic-vs:$(Build.DefinitionName).$(Build.BuildNumber) | gzip -c > $(Build.ArtifactStagingDirectory)/docker-sonic-vs.gz
-      rm -rf $(Build.ArtifactStagingDirectory)/download
-    displayName: "Build docker-sonic-vs"  
+        popd
+
+        docker save docker-sonic-vs:$(Build.DefinitionName).$(Build.BuildNumber) | gzip -c > $(Build.ArtifactStagingDirectory)/docker-sonic-vs.gz
+        rm -rf $(Build.ArtifactStagingDirectory)/download
+      displayName: "Build docker-sonic-vs"  
