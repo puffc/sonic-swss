@@ -84,8 +84,8 @@ stages:
       inputs:
         source: specific
         project: build
-        pipeline: puffc.sonic-buildimage
-        artifact: sonic-buildimage.vs1
+        pipeline: puffc.sonic-dash-api
+        artifact: sonic-dash-api-bullseye
         buildVersionToDownload: latest
         allowFailedBuilds: true
         allowPartiallySucceededBuilds: true
