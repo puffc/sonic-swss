@@ -107,6 +107,8 @@ stages:
         set -ex
         tar czf pytest.tgz tests
         cp -r pytest.tgz $(Build.ArtifactStagingDirectory)/
+        export ENABLE_GCOV=y
+        echo BUILD_DIR=$(pwd) > build.info
         ./autogen.sh
         dpkg-buildpackage -us -uc -b -j$(nproc) && cp ../*.deb .
       displayName: "Compile sonic swss"
