@@ -38,15 +38,53 @@ jobs:
       itemPattern: |
         **/libswsscommon_1.0.0_*.deb
         **/libswsscommon-dev_1.0.0_*.deb
-        **/libsai*.deb
-        **/syncd*.deb
-        **/libnl*.deb
-        **/libyang*.deb
     displayName: "Download sonic swss common deb packages"
+  - task: DownloadPipelineArtifact@2
+    inputs:
+      source: specific
+      project: build
+      pipeline: puffc.sonic-buildimage
+      artifact: sonic-buildimage.vs1
+      buildVersionToDownload: latest
+      allowFailedBuilds: true
+      allowPartiallySucceededBuilds: true
+      path: $(Build.ArtifactStagingDirectory)/download/sairedis
+      itemPattern: |
+        **/libsaivs_*.deb
+        **/libsaivs-dev_*.deb
+        **/libsairedis_*.deb
+        **/libsairedis-dev_*.deb
+        **/libsaimetadata_*.deb
+        **/libsaimetadata-dev_*.deb
+        **/syncd-vs_*.deb
+    displayName: "Download sonic sairedis deb packages"
+  - task: DownloadPipelineArtifact@2
+    inputs:
+      source: specific
+      project: build
+      pipeline: puffc.sonic-buildimage
+      artifact: sonic-buildimage.vs1
+      buildVersionToDownload: latest
+      allowFailedBuilds: true
+      allowPartiallySucceededBuilds: true
+      path: $(Build.ArtifactStagingDirectory)/download/common
+      itemPattern: |
+        **/libnl-3-200_*.deb
+        **/libnl-3-dev_*.deb
+        **/libnl-genl-3-200_*.deb
+        **/libnl-genl-3-dev_*.deb
+        **/libnl-route-3-200_*.deb
+        **/libnl-route-3-dev_*.deb
+        **/libnl-nf-3-200_*.deb
+        **/libnl-nf-3-dev_*.deb
+        **/libyang_*.deb
+    displayName: "Download common libs"
   - script: |
       set -ex
       cd download
+      sudo dpkg -i $(find common/target/debs/bookworm -type f -name '*.deb')
       sudo dpkg -i $(find swsscommon/target/debs/bookworm -type f -name '*.deb')
+      sudo dpkg -i $(find sairedis/target/debs/bookworm -type f -name '*.deb')
       cd ..
       rm -rf download
     workingDirectory: $(Build.ArtifactStagingDirectory)
