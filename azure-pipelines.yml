@@ -6,8 +6,9 @@ trigger:
 
 pool: mypool
 
+
 jobs:
-- job: Download_artifacts
+- job:
   container:
     image: sonicdev-microsoft.azurecr.io:443/sonic-slave-bookworm:latest
   steps:
@@ -42,3 +43,11 @@ jobs:
         **/libnl*.deb
         **/libyang*.deb
     displayName: "Download sonic swss common deb packages"
+  - script: |
+      set -ex
+      cd download
+      sudo dpkg -i $(find swsscommon/target/debs/bookworm -type f -name '*.deb')
+      cd ..
+      rm -rf download
+    workingDirectory: $(Build.ArtifactStagingDirectory)
+    displayName: "Install libnl3, sonic swss common and sairedis"
