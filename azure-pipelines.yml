@@ -37,4 +37,8 @@ jobs:
       itemPattern: |
         **/libswsscommon_1.0.0_*.deb
         **/libswsscommon-dev_1.0.0_*.deb
+        **/libsai*.deb
+        **/syncd*.deb
+        **/libnl*.deb
+        **/libyang*.deb
     displayName: "Download sonic swss common deb packages"
