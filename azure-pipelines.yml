@@ -37,8 +37,7 @@ stages:
         allowPartiallySucceededBuilds: true
         path: $(Build.ArtifactStagingDirectory)/download/swsscommon
         itemPattern: |
-          **/libswsscommon_1.0.0_*.deb
-          **/libswsscommon-dev_1.0.0_*.deb
+          **/*.deb
       displayName: "Download sonic swss common deb packages"
     - task: DownloadPipelineArtifact@2
       inputs:
