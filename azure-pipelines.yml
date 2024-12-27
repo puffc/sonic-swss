@@ -23,6 +23,8 @@ stages:
           libzmq3-dev \
           swig4.0 \
           libdbus-1-dev \
+          libprotobuf32 \
+          libprotobuf-lite23 \
           libteam-dev
         sudo pip3 install lcov_cobertura
       displayName: "Install dependencies"  
