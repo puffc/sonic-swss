@@ -132,22 +132,21 @@ stages:
       inputs:
         source: specific
         project: build
-        pipeline: puffc.sonic-buildimage
-        artifact: sonic-buildimage.vs1
+        pipeline: puffc.sonic-swss-common
+        artifact: sonic-swss-common-bullseye
         buildVersionToDownload: latest
         allowFailedBuilds: true
         allowPartiallySucceededBuilds: true
         path: $(Build.ArtifactStagingDirectory)/download/swsscommon
         itemPattern: |
-          **/libswsscommon_1.0.0_*.deb
-          **/libswsscommon-dev_1.0.0_*.deb
+          **/*.deb
       displayName: "Download sonic swss common deb packages"
     - task: DownloadPipelineArtifact@2
       inputs:
         source: specific
         project: build
-        pipeline: puffc.sonic-buildimage
-        artifact: sonic-buildimage.vs1
+        pipeline: puffc.sonic-sairedis
+        artifact: sonic-sairedis-bullseye
         buildVersionToDownload: latest
         allowFailedBuilds: true
         allowPartiallySucceededBuilds: true
@@ -181,20 +180,24 @@ stages:
           **/libnl-nf-3-200_*.deb
           **/libnl-nf-3-dev_*.deb
           **/libyang_*.deb
+          **/libprotobuf*.deb
+          **/libprotoc*.deb
+          **/protobuf-compiler*.deb
+
       displayName: "Download common libs"
     - task: DownloadPipelineArtifact@2
       inputs:
         source: specific
         project: build
-        pipeline: puffc.sonic-buildimage
-        artifact: sonic-buildimage.vs1
+        pipeline: puffc.sonic-dash-api
+        artifact: sonic-dash-api-bullseye
         buildVersionToDownload: latest
         allowFailedBuilds: true
         allowPartiallySucceededBuilds: true
-        path: $(Build.ArtifactStagingDirectory)/download/common
+        path: $(Build.ArtifactStagingDirectory)/download/common/target/debs/bullseye
         patterns: |
           **/libdashapi*.deb
-      displayName: "Download dash api"    
+      displayName: "Download dash api"   
     - task: DownloadPipelineArtifact@2
       inputs:
         artifact: sonic-swss-bullseye
