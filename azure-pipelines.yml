@@ -225,7 +225,7 @@ stages:
 
         find $(Build.ArtifactStagingDirectory)/download/sairedis -name '*.deb' -exec cp "{}" .azure-pipelines/docker-sonic-vs/debs \;
         cp -v $(Build.ArtifactStagingDirectory)/download/common/target/debs/bullseye/*.deb .azure-pipelines/docker-sonic-vs/debs
-        cp -v $(Build.ArtifactStagingDirectory)/download/swsscommon/target/debs/bullseye/*.deb .azure-pipelines/docker-sonic-vs/debs
+        cp -v $(Build.ArtifactStagingDirectory)/download/swsscommon/*.deb .azure-pipelines/docker-sonic-vs/debs
 
         if [ -f $(Build.ArtifactStagingDirectory)/download/coverage.info ]; then
           cp -v $(Build.ArtifactStagingDirectory)/download/coverage.info $(Build.ArtifactStagingDirectory)/
