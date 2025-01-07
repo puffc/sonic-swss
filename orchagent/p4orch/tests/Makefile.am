@@ -20,6 +20,7 @@ LDADD_GTEST = -lgtest -lgtest_main -lgmock -lgmock_main
 p4orch_tests_SOURCES = $(ORCHAGENT_DIR)/orch.cpp \
 		       $(ORCHAGENT_DIR)/vrforch.cpp \
 		       $(ORCHAGENT_DIR)/vxlanorch.cpp \
+		       $(ORCHAGENT_DIR)/routeorch.cpp \
 		       $(ORCHAGENT_DIR)/copporch.cpp \
 		       $(ORCHAGENT_DIR)/switch/switch_capabilities.cpp \
 		       $(ORCHAGENT_DIR)/switch/switch_helper.cpp \
