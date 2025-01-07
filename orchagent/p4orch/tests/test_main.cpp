@@ -15,7 +15,6 @@ extern "C"
 #include "mock_sai_virtual_router.h"
 #include "p4orch.h"
 #include "portsorch.h"
-#include "routeorch.h"
 #include "sai_serialize.h"
 #include "switchorch.h"
 #include "vrforch.h"
@@ -51,7 +50,6 @@ PortsOrch *gPortsOrch;
 CrmOrch *gCrmOrch;
 P4Orch *gP4Orch;
 VRFOrch *gVrfOrch;
-RouteOrch *gRouteOrch;
 FlowCounterRouteOrch *gFlowCounterRouteOrch;
 SwitchOrch *gSwitchOrch;
 Directory<Orch *> gDirectory;
