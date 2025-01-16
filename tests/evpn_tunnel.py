@@ -1185,17 +1185,6 @@ class VxlanTunnel(object):
 
         return list(current_entries - initial_entries)[0]
 
-    def create_vrf1(self, dvs, vrf_name):
-        conf_db = swsscommon.DBConnector(swsscommon.CONFIG_DB, dvs.redis_sock, 0)
-
-        attrs = [
-            ("vni", "0"),
-        ]
-        tbl = swsscommon.Table(conf_db, "VRF")
-        fvs = swsscommon.FieldValuePairs(attrs)
-        tbl.set(vrf_name, fvs)
-        time.sleep(2)
-
     def remove_vrf(self, dvs, vrf_name):
         conf_db = swsscommon.DBConnector(swsscommon.CONFIG_DB, dvs.redis_sock, 0)
         tbl = swsscommon.Table(conf_db, "VRF")
