@@ -176,14 +176,14 @@ RouteOrch::RouteOrch(DBConnector *db, vector<table_name_with_pri_t> &tableNames,
      */
     IpPrefix linklocal_prefix = getLinkLocalEui64Addr();
 
-    addLinkLocalRouteToMe(vrf_id, linklocal_prefix);
+    addLinkLocalRouteToMe(gVirtualRouterId, linklocal_prefix);
     SWSS_LOG_NOTICE("Created link local ipv6 route %s to cpu", linklocal_prefix.to_string().c_str());
 
     /* Add fe80::/10 subnet route to forward all link-local packets
      * destined to us, to CPU */
     IpPrefix default_link_local_prefix("fe80::/10");
 
-    addLinkLocalRouteToMe(vrf_id, default_link_local_prefix);
+    addLinkLocalRouteToMe(gVirtualRouterId, default_link_local_prefix);
     SWSS_LOG_NOTICE("Created link local ipv6 route %s to cpu", default_link_local_prefix.to_string().c_str());
 }
 
