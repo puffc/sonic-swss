@@ -217,7 +217,6 @@ public:
     bool removeFineGrainedNextHopGroup(sai_object_id_t &next_hop_group_id);
     bool isRouteExists(const IpPrefix& prefix);
     bool removeRoutePrefix(const IpPrefix& prefix);
-
     void addLinkLocalRouteToMe(sai_object_id_t vrf_id, IpPrefix linklocal_prefix);
     void delLinkLocalRouteToMe(sai_object_id_t vrf_id, IpPrefix linklocal_prefix);
     std::string getLinkLocalEui64Addr(void);

@@ -176,14 +176,14 @@ RouteOrch::RouteOrch(DBConnector *db, vector<table_name_with_pri_t> &tableNames,
      */
     IpPrefix linklocal_prefix = getLinkLocalEui64Addr();
 
-    addLinkLocalRouteToMe(gVirtualRouterId, linklocal_prefix);
+    addLinkLocalRouteToMe(vrf_id, linklocal_prefix);
     SWSS_LOG_NOTICE("Created link local ipv6 route %s to cpu", linklocal_prefix.to_string().c_str());
 
     /* Add fe80::/10 subnet route to forward all link-local packets
      * destined to us, to CPU */
     IpPrefix default_link_local_prefix("fe80::/10");
 
-    addLinkLocalRouteToMe(gVirtualRouterId, default_link_local_prefix);
+    addLinkLocalRouteToMe(vrf_id, default_link_local_prefix);
     SWSS_LOG_NOTICE("Created link local ipv6 route %s to cpu", default_link_local_prefix.to_string().c_str());
 }
 
@@ -632,6 +632,7 @@ void RouteOrch::doTask(Consumer& consumer)
                 string srv6_segments;
                 string srv6_source;
                 bool srv6_nh = false;
+                bool linklocal_trap = false;
 
                 for (auto i : kfvFieldsValues(t))
                 {
@@ -673,6 +674,9 @@ void RouteOrch::doTask(Consumer& consumer)
                     {
                         ctx.protocol = fvValue(i);
                     }
+
+                    if (fvField(i) == "linklocal_trap")
+                        linklocal_trap = fvValue(i) == "true";
                 }
 
                 /*
@@ -703,6 +707,12 @@ void RouteOrch::doTask(Consumer& consumer)
                 vector<string> srv6_src;
                 bool l3Vni = true;
                 uint32_t vni = 0;
+
+                if (linklocal_trap)
+                {
+                    addLinkLocalRouteToMe(vrf_id, ip_prefix);
+                    continue;
+                }
 
                 /* Check if the next hop group is owned by the NhgOrch. */
                 if (nhg_index.empty())
