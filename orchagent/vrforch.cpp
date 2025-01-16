@@ -23,7 +23,6 @@ extern sai_object_id_t gSwitchId;
 extern Directory<Orch*>      gDirectory;
 extern PortsOrch*            gPortsOrch;
 extern FlowCounterRouteOrch* gFlowCounterRouteOrch;
-extern RouteOrch *gRouteOrch;
 
 bool VRFOrch::addOperation(const Request& request)
 {
